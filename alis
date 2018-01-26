@@ -1,0 +1,186 @@
+#!/usr/bin/bash
+#
+# ALIS — Arch Linux Install Script
+#
+set -euox pipefail
+IFS=$'\n\t'
+
+setup_host_system(){
+ timedatectl set-ntp true
+ timedatectl status
+ loadkeys us
+}
+
+create_bootloader_device(){
+cat <<EOF | fdisk -W always "$key_drive"
+g
+n
+1
+
++512M
+t
+1
+v
+w
+EOF
+  partprobe "$key_drive"
+  sleep 3
+  mkfs.vfat -n "$esp_drive_part_label" -F32 "$esp_drive_part"
+}
+
+create_header(){
+  truncate -s 2M "$header"
+}
+
+create_crypted_device(){
+  cryptsetup -q -c "$cipher_type" luksFormat "$system_drive" --header="$header"
+  cryptsetup -q luksOpen   "$system_drive" --header="$header" "$decrypted_device_name"
+}
+
+create_btrfs_device(){
+  mkfs.btrfs -L "$btrfs_device_label" "$decrypted_device"
+}
+
+create_btrfs_layout(){
+  mount -o "$btrfs_device_opts"  "$decrypted_device" "$mountpoint"
+  mkdir -v -p "$mountpoint/archlinux"
+  mkdir -v -p "$mountpoint/snapshots"
+
+  mkdir -v -p "$mountpoint/archlinux/var"
+  mkdir -v -p "$mountpoint/archlinux/usr"
+  mkdir -v -p "$mountpoint/snapshots/var"
+  mkdir -v -p "$mountpoint/snapshots/usr"
+
+  btrfs subvolume create "$mountpoint/archlinux/root"
+  btrfs subvolume create "$mountpoint/archlinux/home"
+  btrfs subvolume create "$mountpoint/archlinux/srv"
+  btrfs subvolume create "$mountpoint/archlinux/opt"
+  btrfs subvolume create "$mountpoint/archlinux/usr/local"
+  btrfs subvolume create "$mountpoint/archlinux/var/tmp"
+  btrfs subvolume create "$mountpoint/archlinux/var/opt"
+  btrfs subvolume create "$mountpoint/archlinux/var/log"
+  btrfs subvolume create "$mountpoint/archlinux/var/cache"
+
+  btrfs subvolume create "$mountpoint/snapshots/snapper_root"
+  btrfs subvolume create "$mountpoint/snapshots/snapper_home"
+  btrfs subvolume create "$mountpoint/snapshots/snapper_srv"
+  btrfs subvolume create "$mountpoint/snapshots/snapper_opt"
+  btrfs subvolume create "$mountpoint/snapshots/usr/snapper_local"
+  btrfs subvolume create "$mountpoint/snapshots/var/snapper_tmp"
+  btrfs subvolume create "$mountpoint/snapshots/var/snapper_opt"
+  btrfs subvolume create "$mountpoint/snapshots/var/snapper_log"
+  btrfs subvolume create "$mountpoint/snapshots/var/snapper_cache"
+
+  umount -R "$mountpoint"
+  mount -t btrfs -o subvol=/archlinux/root,"$btrfs_device_opts"   "$decrypted_device"  "$mountpoint"
+  mkdir -v -p "$mountpoint/boot"
+  mkdir -v -p "$mountpoint/home"
+  mkdir -v -p "$mountpoint/srv"
+  mkdir -v -p "$mountpoint/opt"
+  mkdir -v -p "$mountpoint/tmp"
+  mkdir -v -p "$mountpoint/usr/local"
+  mkdir -v -p "$mountpoint/var/tmp"
+  mkdir -v -p "$mountpoint/var/opt"
+  mkdir -v -p "$mountpoint/var/log"
+  mkdir -v -p "$mountpoint/var/cache"
+
+  mount -t vfat -o "$esp_drive_opts" "$esp_drive_part"            "$mountpoint/boot"
+  mount -t btrfs -o subvol=/archlinux/home,"$btrfs_device_opts"     "$decrypted_device"  "$mountpoint/home"
+  mount -t btrfs -o subvol=/archlinux/srv,"$btrfs_device_opts"      "$decrypted_device"  "$mountpoint/srv"
+  mount -t btrfs -o subvol=/archlinux/opt,"$btrfs_device_opts"      "$decrypted_device"  "$mountpoint/opt"
+  mount -t btrfs -o subvol=/archlinux/usr/local,"$btrfs_device_opts"      "$decrypted_device"  "$mountpoint/usr/local"
+  mount -t btrfs -o subvol=/archlinux/var/tmp,"$btrfs_device_opts"      "$decrypted_device"  "$mountpoint/var/tmp"
+  mount -t btrfs -o subvol=/archlinux/var/opt,"$btrfs_device_opts"      "$decrypted_device"  "$mountpoint/var/opt"
+  mount -t btrfs -o subvol=/archlinux/var/log,"$btrfs_device_opts"      "$decrypted_device"  "$mountpoint/var/log"
+  mount -t btrfs -o subvol=/archlinux/var/cache,"$btrfs_device_opts"      "$decrypted_device"  "$mountpoint/var/cache"
+
+  chmod 1777 "$mountpoint/var/tmp"
+}
+
+copy_header(){
+  mv "$header" /mnt/boot
+}
+
+system_installation(){
+  printf 'Get Ready to rock!'
+  setup_host_sysytem
+  create_bootloader_device
+  create_header
+  create_crypted_device
+  create_btrfs_device
+  create_btrfs_layout
+  copy_header
+}
+
+parse_arguments(){
+  for argument in "$@"
+  do
+  case $argument in
+    install)
+    action=system_installation
+      shift
+      ;;
+    --system_drive=*)
+      system_drive="${argument#*=}"
+      shift
+      ;;
+    --key_drive=*)
+      key_drive="${argument#*=}"
+      shift
+      ;;
+    --esp_drive_part=*)
+      esp_drive_part="${argument#*=}"
+      shift
+      ;;
+    --mountpoint=*)
+      mountpoint="${argument#*=}"
+      shift
+      ;;
+    *)
+      echo 'unknownl'
+      ;;
+  esac
+  done
+}
+
+set_vars(){
+   time_zone=${time_zone:-Europe/Moscow}
+system_drive=${system_drive:-/dev/sda}
+   key_drive=${key_drive:-/dev/sdc}
+
+esp_drive_part_label=${esp_drive_part_label:-ESP}
+      esp_drive_opts=${esp_drive_opts:-rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro}
+
+        crypted_drive_uuid=${crypted_drive_uuid:-88af5018-e2fa-402a-bd5d-bca5512da5fa}
+               cipher_type=${cipher_type:-aes-xts-plain -s 256}
+
+ header_path=${header_path:-/boot/}
+ header_name=${header_name:-header.img}
+
+decrypted_device_path=${decrypted_device_path:-/dev/mapper}
+decrypted_device_name=${decrypted_device_name:-cryptroot}
+
+btrfs_device_label=${btrfs_device_label:-archlinux}
+ btrfs_device_opts=${btrfs_device_opts:-defaults,noatime,ssd,compress=lzo,discard,space_cache,commit=120}
+        mountpoint=${mountpoint:-/mnt}
+          packages=${packages:-base base-devel btrfs-progs snapper}
+         user_name=${user_name:-dryam}
+          hostname=${hostname:-laptop}
+
+              LANG=${LANG:-en_US.UTF-8}
+            KEYMAP=${KEYMAP:-us}
+     groups_member=${groups_member:-wheel}
+
+    esp_drive_part="${key_drive}"
+    keyfile="${keyfile_path}""${keyfile_name}"
+    header="${header_path}""${header_name}"
+    decrypted_device="${decrypted_device_path}"/"${decrypted_device_name}"
+}
+
+main(){
+  parse_arguments "$@"
+  set_vars
+  "$action"
+}
+
+main "$@"
