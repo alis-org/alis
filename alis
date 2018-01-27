@@ -101,6 +101,37 @@ copy_header(){
   mv "$header" /mnt/boot
 }
 
+create_ranked_mirrorslist(){
+  cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
+  wget "https://www.archlinux.org/mirrorlist/?country=RU&protocol=https&ip_version=4" -O '/etc/pacman.d/mirrorlist.tmp'
+  sed -i 's/^#Server/Server/' /etc/pacman.d/mirrorlist.tmp
+  rankmirrors -n 6 /etc/pacman.d/mirrorlist.tmp > /etc/pacman.d/mirrorlist
+}
+
+package_install(){
+pacstrap -G -M -C /root/pacstrap.conf "$mountpoint" base btrfs-progs snapper snap-pac intel-ucode kbd-ru-keymaps \
+terminus-font man-pages-ru zsh zsh-doc zsh-completions zsh-syntax-highlighting grml-zsh-config linux linux-headers \
+broadcom-wl-dkms wpa_supplicant polkit sudo
+}
+
+fix_systemd_journald(){
+mkdir -p -v "$mountpoint"/etc/systemd/system/systemd-journald.service.d
+
+cat <<EOT >> "$mountpoint"/etc/systemd/system/systemd-journald.service.d/mounts.conf
+[Unit]
+RequiresMountsFor=/var/log/journal
+EOT
+}
+
+copy_configs(){
+  cp config/vconsole.conf "$mountpoint"/etc/
+  mkdir -p "$mountpoint"/etc/skel/.config
+  cp config/locale-ru.conf "$mountpoint"/etc/skel/.config/locale.conf
+  cp config/locale-en.conf "$mountpoint"/etc/locale.conf
+  echo "$hostname" >> "$mountpoint"/etc/hostname
+  cp config/hosts "$mountpoint"/etc/hosts
+}
+
 system_installation(){
   printf 'Get Ready to rock!'
   setup_host_sysytem
@@ -110,6 +141,10 @@ system_installation(){
   create_btrfs_device
   create_btrfs_layout
   copy_header
+  create_ranked_mirrorslist
+  package_install
+  fix_systemd_journald
+  copy_configs
 }
 
 parse_arguments(){
