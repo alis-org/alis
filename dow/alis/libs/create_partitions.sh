@@ -10,7 +10,7 @@ create_os_part(){
     die "Creating $luks_header is bad";
   fi
 
-  cryptsetup -q -c "$cipher" luksFormat "$os_part"  --type=luks2 --disable-keyring -y --progress-frequency=1 -t=0 -T=2  --header="$luks_header"  --label="$os_label"
+  cryptsetup -q -c "$cipher" luksFormat "$os_part"  --type=luks2 --disable-keyring -y --progress-frequency=1 -t=100 -T=2  --header="$luks_header"  --uuid="$luks_uuid" --label="$os_label"
   if [ $? -eq 0 ]; then
     msg "Formating $os_part to luks device is good";
   else

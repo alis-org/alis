@@ -1,0 +1,4 @@
+Defaults      env_reset
+Defaults      editor=/usr/bin/nano, !env_editor
+Defaults      insults
+%wheel        ALL=(ALL) ALL

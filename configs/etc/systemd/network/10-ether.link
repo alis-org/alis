@@ -1,0 +1,6 @@
+[Match]
+MACAdress=ec:8e:b5:0d:e7:62
+Virtualization=no
+
+[Link]
+Name=ether0

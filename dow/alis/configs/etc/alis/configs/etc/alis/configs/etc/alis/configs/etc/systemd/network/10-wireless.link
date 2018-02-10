@@ -1,0 +1,7 @@
+[Match]
+Type=wlan
+Virtualization=no
+
+[Link]
+Name=wireless
+MACAddressPolicy=random

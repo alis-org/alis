@@ -1,0 +1,12 @@
+#esp_label="ESP"
+#esp_part="/dev/sda1"
+#esp_opts="rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro"
+
+#os_label="archlinux"
+#os_part="/dev/sda2}"
+#os_opts="defaults,noatime,compress=lzo,discard,space_cache,commit=120"
+
+#cipher="cipher:-aes-xts-plain -s 256"
+#packages="base snapper"
+
+#export packages 04c2b973-4aca-45e6-8434-f66ed6ea922d

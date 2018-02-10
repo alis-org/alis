@@ -78,7 +78,6 @@ enable_network_services(){
   arch-chroot "$mountpoint" systemctl enable systemd-networkd.service
   arch-chroot "$mountpoint" systemctl enable systemd-resolved.service
   arch-chroot "$mountpoint" systemctl enable wpa_supplicant@wlan0.service
-  ln -sf /run/systemd/resolve/resolv.conf /mnt/etc/resolv.conf
 }
 
 generate_locales(){
@@ -123,9 +122,9 @@ chsh_root(){
   arch-chroot "$mountpoint" cp /etc/skel/.zshrc ~/
 }
 
-enable_firstboot(){
-  arch-chroot "$mountpoint" rm --verbose  -rf /etc/{machine-id,localtime,hostname,shadow,locale.conf}
-  arch-chroot "$mountpoint" systemctl enable systemd-firstboot.service
+remove_sys_conf(){
+arch-chroot "$mountpoint" rm -r -f /etc/{machine_id,localtime,shadow,locale.conf}
+arch-chroot "$mountpoint" systemctl enable systemd-firstboot
 }
 
 setup_systemd_in_chroot(){
@@ -134,13 +133,13 @@ setup_systemd_in_chroot(){
   generate_locales
   setup_rollback_layout
 #  setup_pacman
+  remove_sys_conf
   enable_network_services
   check_permissions
 # mount_efivars
   generate_fstab
   update_pkgfile
   chsh_root
-  enable_firstboot
 }
 
 export setup_systemd_in_chroot

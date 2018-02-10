@@ -77,8 +77,7 @@ setup_pacman(){
 enable_network_services(){
   arch-chroot "$mountpoint" systemctl enable systemd-networkd.service
   arch-chroot "$mountpoint" systemctl enable systemd-resolved.service
-  arch-chroot "$mountpoint" systemctl enable wpa_supplicant@wlan0.service
-  ln -sf /run/systemd/resolve/resolv.conf /mnt/etc/resolv.conf
+  arch-chroot "$mountpoint" systemctl enable wpa_supplicant@wireless.service
 }
 
 generate_locales(){
@@ -114,33 +113,16 @@ arch-chroot "$mountpoint" chown -c root:root /etc/sudoers.d/10_custom
 arch-chroot "$mountpoint" chmod -c 0440 /etc/sudoers.d/10_custom
 }
 
-update_pkgfile(){
-arch-chroot "$mountpoint" pkgfile --update
-}
-
-chsh_root(){
-  arch-chroot "$mountpoint" chsh --shell=/bin/zsh root
-  arch-chroot "$mountpoint" cp /etc/skel/.zshrc ~/
-}
-
-enable_firstboot(){
-  arch-chroot "$mountpoint" rm --verbose  -rf /etc/{machine-id,localtime,hostname,shadow,locale.conf}
-  arch-chroot "$mountpoint" systemctl enable systemd-firstboot.service
-}
-
 setup_systemd_in_chroot(){
   local name="generating locales, rollback layout, enabling needed services"
   title "Start $name: $@"
   generate_locales
   setup_rollback_layout
-#  setup_pacman
+  setup_pacman
   enable_network_services
   check_permissions
-# mount_efivars
+  mount_efivars
   generate_fstab
-  update_pkgfile
-  chsh_root
-  enable_firstboot
 }
 
 export setup_systemd_in_chroot

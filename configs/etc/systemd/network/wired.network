@@ -1,0 +1,10 @@
+[Match]
+Name=ether*
+
+[Network]
+LinkLocalAddressing=ipv4
+IPv6AcceptRA=no
+DHCP=ipv4
+
+[DHCP]
+RouteMetric=10

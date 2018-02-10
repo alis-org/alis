@@ -1,0 +1,7 @@
+[Match]
+Type=wired
+Virtualization=no
+
+[Link]
+Name=wired
+MACAddressPolicy=random

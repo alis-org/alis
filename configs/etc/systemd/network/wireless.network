@@ -1,0 +1,10 @@
+[Match]
+Name=wlan*
+
+[Network]
+DHCP=ipv4
+LinkLocalAddressing=ipv4
+IPv6AcceptRA=no
+
+[DHCP]
+RouteMetric=20
