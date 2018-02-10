@@ -1,7 +1,5 @@
 [Match]
 Type=wlan
-Virtualization=no
 
 [Link]
 Name=wlan0
-MACAddressPolicy=random
