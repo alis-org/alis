@@ -1,0 +1,15 @@
+[Match]
+Name=wlan0
+
+[Network]
+DHCP=ipv4
+LinkLocalAddressing=ipv4
+NTP=0.arch.pool.ntp.org 1.arch.pool.ntp.org 2.arch.pool.ntp.org 3.arch.pool.ntp.org
+
+[DHCP]
+RouteMetric=20
+UseDomains=true
+Anonymize=true
+
+[DHCPv4]
+UseHostname=false

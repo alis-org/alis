@@ -136,11 +136,11 @@ set_defaults(){
 
       esp_label=${esp_label:-ESP}
        esp_part=${esp_part:-/dev/sda1}
-  esp_part_opts=${esp_part_opts:-rw,noauto,x-systemd.automount,noatime,fmask=0022,dmask=0022,codepage=866,iocharset=utf8,utf8=true,shortname=mixed,errors=remount-ro}
+  esp_part_opts=${esp_part_opts:-rw,noatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro}
 
       os_label=${os_part_label:-OS}
        os_part=${os_part:-/dev/sda2}
-  os_part_opts=${os_part_opts:-defaults,noatime,compress=lzo,space_cache,commit=120,noauto,x-systemd.automount}
+  os_part_opts=${os_part_opts:-defaults,noatime,compress=lzo,space_cache,commit=120}
         cipher=${cipher:-aes-xts-plain -s 256}
 
 

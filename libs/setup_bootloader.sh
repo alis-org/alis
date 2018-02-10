@@ -66,12 +66,20 @@ create_efi_entety(){
   fi
 }
 
+create_bootloader(){
+        arch-chroot "$mountpoint" bootctl status
+        arch-chroot "$mountpoint" bootctl install
+        arch-chroot "$mountpoint" bootctl status
+}
+
 setup_bootloader(){
   local name="generating efi app, signing and place it to ESP"
   title "Start $name: $@"
-  generate_keys
-  enroll_keys
-  create_efi_entety
+#  generate_keys
+#  enroll_keys
+#  create_efi_entety
+   arch-chroot "$mountpoint" mkinitcpio -p linux
+   create_bootloader
 }
 
 export setup_bootloader

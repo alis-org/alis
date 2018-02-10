@@ -23,7 +23,7 @@
  set autoindent
 
 ## Back up files to the current filename plus a tilde.
- set backup
+# set backup
 
 ## The directory to put unique backup files in.
 # set backupdir "~/.config/nano/backup"
@@ -71,7 +71,7 @@
  set matchbrackets "(<[{)>]}"
 
 ## Use the blank line below the title bar as extra editing space.
- set morespace
+# set morespace
 
 ## Enable mouse support, if available for your system.  When enabled,
 ## mouse clicks can be used to place the cursor, set the mark (with a
@@ -94,7 +94,7 @@
 # set nopauses
 
 ## Don't add newlines to the ends of files.
- set nonewlines
+# set nonewlines
 
 ## Don't wrap text at all.
  set nowrap
@@ -116,7 +116,7 @@
 ## paragraphs.  They cannot contain blank characters.  Only closing
 ## punctuation, optionally followed by closing brackets, can end
 ## sentences.
- set punct "!.?"
+# set punct "!.?"
 
 ## Do quick status-bar blanking.  Status-bar messages will disappear after
 ## 1 keystroke instead of 26.  Note that "constantshow" overrides this.
@@ -126,7 +126,7 @@
 ## This is an extended regular expression if your system supports them,
 ## otherwise a literal string.
 ## If you have extended regular expression support, the default is:
- set quotestr "^([ 	]*[#:>\|}])+"
+# set quotestr "^([ 	]*[#:>\|}])+"
 ## Otherwise:
 # set quotestr "> "
 
@@ -164,7 +164,7 @@
  set suspend
 
 ## Use this tab size instead of the default; it must be greater than 0.
- set tabsize 2
+ set tabsize 8
 
 ## Convert typed tabs to spaces.
  set tabstospaces
