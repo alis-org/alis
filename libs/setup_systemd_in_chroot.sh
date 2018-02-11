@@ -140,6 +140,8 @@ setup_systemd_in_chroot(){
   generate_fstab
   update_pkgfile
   chsh_root
+  arch-chroot "$mountpoint" mkinitcpio -p linux
+  arch-chroot "$mountpoint" bootctl install
   enable_firstboot
 }
 

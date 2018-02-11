@@ -57,7 +57,7 @@ start_system_installation(){
   min_pack
   copy_configs
   setup_systemd_in_chroot
-  setup_bootloader
+#  setup_bootloader
 }
 
 parse_arguments(){

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+case "$2" in
+	CONNECTED)
+	#notify-send "WPA supplicant: up";
+	echo "UP";
+	;;
+	DISCONNECTED)
+	#notify-send "WPA supplicant down";
+	echo "DOWN";
+	;;
+esac
