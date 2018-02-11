@@ -51,7 +51,10 @@ show_status(){
 }
 
 start_firstlogin(){
-  . libs/pam_snapper_useradd.sh  lolo kaka
+  . libs/pam_snapper_useradd.sh  "${new_user}" "${new_user_group}"
+   usermod --comment="Owner"  --shell=/bin/zsh -G wheel,lp "${new_user}"
+   cp -r /etc/skel/.config /home/"${new_user}"
+   cp /etc/skel/.zshrc /home/"${new_user}"
 }
 
 start_system_installation(){
@@ -156,8 +159,8 @@ set_defaults(){
   verbose_mode=${verbose_mode:-false}
         config=${congig:-configs/etc/alis/alisrc}
   country_code=${country_code:-RU}
-      new_user=${new_user:-arghjgh}
-new_user_group=${new_user_group:-archer19}
+      new_user=${new_user:-newbe3}
+new_user_group=${new_user_group:-users}
 }
 
 main(){
