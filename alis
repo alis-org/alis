@@ -55,6 +55,7 @@ start_firstlogin(){
    usermod --comment="Owner"  --shell=/bin/zsh -G wheel,lp "${new_user}"
    cp -r /etc/skel/.config /home/"${new_user}"
    cp /etc/skel/.zshrc /home/"${new_user}"
+   logout
 }
 
 start_system_installation(){
