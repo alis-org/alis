@@ -28,8 +28,7 @@ import_libs(){
   . libs/copy_configs.sh
   . libs/setup_systemd_in_chroot.sh
   . libs/setup_bootloader.sh
-  . libs/snapper_useradd.sh
-}
+  }
 
 show_settings(){
  printf "%s\n" "Here current settings"
@@ -52,7 +51,7 @@ show_status(){
 }
 
 start_firstlogin(){
-   snapper_useradd
+  . libs/pam_snapper_useradd.sh  lolo kaka
 }
 
 start_system_installation(){
@@ -157,6 +156,8 @@ set_defaults(){
   verbose_mode=${verbose_mode:-false}
         config=${congig:-configs/etc/alis/alisrc}
   country_code=${country_code:-RU}
+      new_user=${new_user:-arghjgh}
+new_user_group=${new_user_group:-archer19}
 }
 
 main(){
