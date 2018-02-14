@@ -77,7 +77,8 @@ setup_pacman(){
 enable_network_services(){
   arch-chroot "$mountpoint" systemctl enable systemd-networkd.service
   arch-chroot "$mountpoint" systemctl enable systemd-resolved.service
-  arch-chroot "$mountpoint" systemctl enable wpa_supplicant@wlan0.service
+  arch-chroot "$mountpoint" systemctl enable wpa_supplicant@wireless0.service
+  arch-chroot "$mountpoint" systemctl enable wpa_supplicant-wired@wired0.service
   ln -sf /run/systemd/resolve/resolv.conf /mnt/etc/resolv.conf
 }
 
