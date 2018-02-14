@@ -1,6 +1,6 @@
 [Match]
-Type=wlan
+Type=!wlan
 Virtualization=no
 
 [Link]
-Name=wlan0
+Name=wired0

@@ -1,10 +1,9 @@
 [Match]
-Name=wlan*
+Name=wireless0
 
 [Network]
+Description="IPv4 wireless network with DHCP"
 DHCP=ipv4
-LinkLocalAddressing=ipv4
-IPv6AcceptRA=no
 
 [DHCP]
 RouteMetric=20

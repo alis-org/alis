@@ -1,0 +1,6 @@
+[Match]
+Type=wlan
+Virtualization=no
+
+[Link]
+Name=wireless0

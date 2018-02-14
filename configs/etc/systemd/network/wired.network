@@ -1,9 +1,8 @@
 [Match]
-Name=ether*
+Name=wired0
 
 [Network]
-LinkLocalAddressing=ipv4
-IPv6AcceptRA=no
+Description="IPv4 wired network with DHCP"
 DHCP=ipv4
 
 [DHCP]
