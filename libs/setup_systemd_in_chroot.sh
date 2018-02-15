@@ -91,16 +91,6 @@ generate_locales(){
   fi
 }
 
-mount_efivars(){
-  mount -o remount /sys/firmware/efi/efivars -o rw,nosuid,nodev,noexec,noatime
-  if [ $? -eq 0 ]; then
-    msg "Efivars is good";
-  else
-    die "Efivars is bad";
-  fi
-  arch-chroot "$mountpoint" mount -o remount /sys/firmware/efi/efivars -o rw,nosuid,nodev,noexec,noatime
-}
-
 generate_fstab(){
   genfstab -U -p "$mountpoint" >> "$mountpoint/etc/fstab"
   if [ $? -eq 0 ]; then
@@ -127,6 +117,7 @@ chsh_root(){
 enable_firstboot(){
   arch-chroot "$mountpoint" rm --verbose  -rf /etc/{machine-id,localtime,hostname,shadow,locale.conf}
   arch-chroot "$mountpoint" systemctl enable systemd-firstboot.service
+  arch-chroot "$mountpoint" systemctl enable systemd-setup
 }
 
 setup_systemd_in_chroot(){
@@ -134,10 +125,8 @@ setup_systemd_in_chroot(){
   title "Start $name: $@"
   generate_locales
   setup_rollback_layout
-#  setup_pacman
   enable_network_services
   check_permissions
-# mount_efivars
   generate_fstab
   update_pkgfile
   chsh_root

@@ -2,7 +2,10 @@
 #
 # ALIS — Arch Linux Install Script
 #
-set -euo pipefail
+#set -euo pipefail
+
+
+owner=
 
 parse_arguments(){
   for argument in "$@"
@@ -24,13 +27,12 @@ parse_arguments(){
 }
 
 create_owner(){
-    read -p "Enter a owner user name: " owner
-    sh /usr/lib/pam_snapper/pam_snapper_useradd.sh  "${owner}"  "${owner}"
+    sh /usr/lib/pam_snapper/pam_snapper_useradd.sh  "${owner}"  "${owner}" 
     usermod --comment="Owner" -G wheel,lp  --shell=/bin/zsh "${owner}"
     cp /etc/skel/.zshrc /home/"${owner}"
     cp -r /etc/skel/.config /home/"${owner}"
     chown "${owner}":"${owner}" /home/${owner}/{.config,.zshrc}
-    passwd "${owner}"
+    passwd ${owner} -d -e
 }
 
 generate_keys(){
@@ -91,15 +93,28 @@ create_efi_entety
 }
 
 first_start(){
-        create_owner
-        generate_keys
-        enroll_keys
-        create_efi_app
-        create_efi_entety
+	clear
+	tput clear
+	tput cup 33 66
+	echo "Choose new username: "
+	tput cup 33 87
+	read -p "" owner
+	tput cup 34 66
+        create_owner >/dev/null 2>/dev/nul	
+        generate_keys >/dev/null 2>/dev/null
+        enroll_keys >/dev/null 2>/dev/null
+        create_efi_app >/dev/null 2>/dev/null
+        create_efi_entety >/dev/null 2>/dev/null
+	systemctl disable system-setup >/dev/null 2>/dev/null
+	tput cup 34 66
+	echo "Now login to system"
+	tput cup 35 66
+	sleep 3
+	tput clear
+	clear
 }
 
 main(){
-        clear
         parse_arguments "$@"
         "$action"
 }
