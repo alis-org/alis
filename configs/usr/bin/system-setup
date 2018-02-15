@@ -4,9 +4,27 @@
 #
 set -euo pipefail
 
+parse_arguments(){
+  for argument in "$@"
+  do
+  case $argument in
+    --update-boot)
+    action=update_secure_boot
+      shift
+      ;;
+    --first-start)
+    action=first_start
+      shift
+      ;;
+     *)
+      printf "%s\n"  "Error"
+      ;;
+  esac
+  done
+}
+
 create_owner(){
     read -p "Enter a owner user name: " owner
-    echo "$owner" > owner
     sh /usr/lib/pam_snapper/pam_snapper_useradd.sh  "${owner}"  "${owner}"
     usermod --comment="Owner" -G wheel,lp  --shell=/bin/zsh "${owner}"
     cp /etc/skel/.zshrc /home/"${owner}"
@@ -54,17 +72,36 @@ enroll_keys(){
 
 create_efi_app(){
   rm -rf /boot/EFI
+  rm -rf /boot/loader
   mkdir -p /boot/EFI/BOOT
   sbpctl standalone --osrel="/etc/os-release"  --cmdline="/proc/cmdline"  --initrd="/boot/intel-ucode.img" --initrd="/boot/initramfs-linux.img" --sign /boot/vmlinuz-linux /boot/EFI/BOOT/BOOTX64.EFI
  }
+
 create_efi_entety(){
   efibootmgr -O
+  efibootmgr -b 0000 -B
   efibootmgr --create --disk /dev/sda --part 1 --loader /EFI/BOOT/BOOTX64.EFI --label "Secure Boot"
   efibootmgr -D
+  efibootmgr -n 0000
 }
 
-create_owner
-#generate_keys
-#enroll_keys
-#create_efi_app
+update_secure_boot(){
+create_efi_app
+create_efi_entety
+}
 
+first_start(){
+        create_owner
+        generate_keys
+        enroll_keys
+        create_efi_app
+        create_efi_entety
+}
+
+main(){
+        clear
+        parse_arguments "$@"
+        "$action"
+}
+
+main "$@"
