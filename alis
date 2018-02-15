@@ -160,7 +160,7 @@ set_defaults(){
   verbose_mode=${verbose_mode:-false}
         config=${congig:-configs/etc/alis/alisrc}
   country_code=${country_code:-RU}
-      new_user=${new_user:-newbe3}
+      new_user=${new_user:-dryam}
 new_user_group=${new_user_group:-users}
 }
 
