@@ -3,15 +3,15 @@
 # DESCRIPTION
 #
 setup_rollback_layout(){
-  arch-chroot "$mountpoint"  snapper -v --no-dbus -c root      create-config -t root-template /
-  arch-chroot "$mountpoint"  snapper -v --no-dbus -c home      create-config -t home-template /home
-  arch-chroot "$mountpoint"  snapper -v --no-dbus -c srv       create-config /srv
-  arch-chroot "$mountpoint"  snapper -v --no-dbus -c opt       create-config /opt
-  arch-chroot "$mountpoint"  snapper -v --no-dbus -c usr_local create-config /usr/local
-  arch-chroot "$mountpoint"  snapper -v --no-dbus -c var_tmp   create-config /var/tmp
-  arch-chroot "$mountpoint"  snapper -v --no-dbus -c var_opt   create-config /var/opt
-  arch-chroot "$mountpoint"  snapper -v --no-dbus -c var_log   create-config /var/log
-  arch-chroot "$mountpoint"  snapper -v --no-dbus -c var_cache create-config /var/cache
+  arch-chroot "$mountpoint"  snapper -v --no-dbus -c root      create-config -t root /
+  arch-chroot "$mountpoint"  snapper -v --no-dbus -c home      create-config -t default /home
+  arch-chroot "$mountpoint"  snapper -v --no-dbus -c srv       create-config -t default /srv
+  arch-chroot "$mountpoint"  snapper -v --no-dbus -c opt       create-config -t default /opt
+  arch-chroot "$mountpoint"  snapper -v --no-dbus -c usr_local create-config -t default /usr/local
+  arch-chroot "$mountpoint"  snapper -v --no-dbus -c var_tmp   create-config -t default /var/tmp
+  arch-chroot "$mountpoint"  snapper -v --no-dbus -c var_opt   create-config -t default /var/opt
+  arch-chroot "$mountpoint"  snapper -v --no-dbus -c var_log   create-config -t default /var/log
+  arch-chroot "$mountpoint"  snapper -v --no-dbus -c var_cache create-config -t default /var/cache
 
   arch-chroot "$mountpoint"  btrfs subvolume delete /.snapshots
   arch-chroot "$mountpoint"  btrfs subvolume delete /home/.snapshots
