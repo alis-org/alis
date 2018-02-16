@@ -27,7 +27,6 @@ import_libs(){
   . libs/min_pack.sh
   . libs/copy_configs.sh
   . libs/setup_systemd_in_chroot.sh
-  . libs/setup_bootloader.sh
   }
 
 show_settings(){
