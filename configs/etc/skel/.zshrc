@@ -9,14 +9,6 @@
 [[ -n "${key[PageUp]}"   ]]  && bindkey  "${key[PageUp]}"   beginning-of-buffer-or-history
 [[ -n "${key[PageDown]}" ]]  && bindkey  "${key[PageDown]}" end-of-buffer-or-history
 
-## ZLE tweaks ##
-
-## use the vi navigation keys (hjkl) besides cursor keys in menu completion
-bindkey -M menuselect 'h' vi-backward-char        # left
-bindkey -M menuselect 'k' vi-up-line-or-history   # up
-bindkey -M menuselect 'l' vi-forward-char         # right
-bindkey -M menuselect 'j' vi-down-line-or-history # bottom
-
 
 # just type '...' to get '../..'
 rationalise-dot() {
@@ -39,11 +31,6 @@ setopt printexitvalue
 
 ## Allow comments even in interactive shells
 setopt interactivecomments
-
-
-## changed completer settings
-zstyle ':completion:*' completer _complete _correct _approximate
-zstyle ':completion:*' expand prefix suffix
 
 autoload -Uz promptinit
 promptinit
@@ -87,6 +74,10 @@ fi
 
 ## Always renash
 zstyle ':completion:*' rehash true
+
+## changed completer settings
+zstyle ':completion:*' completer _complete _correct _approximate
+zstyle ':completion:*' expand prefix suffix
 
 ##Extract from  archive
 ex () {
