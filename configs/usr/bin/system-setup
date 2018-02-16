@@ -100,7 +100,7 @@ first_start(){
 	tput cup 33 87
 	read -p "" owner
 	tput cup 34 66
-        create_owner >/dev/null 2>/dev/nul	
+        create_owner >/dev/null 2>/dev/null
         generate_keys >/dev/null 2>/dev/null
         enroll_keys >/dev/null 2>/dev/null
         create_efi_app >/dev/null 2>/dev/null

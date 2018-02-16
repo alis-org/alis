@@ -117,7 +117,7 @@ chsh_root(){
 enable_firstboot(){
   arch-chroot "$mountpoint" rm --verbose  -rf /etc/{machine-id,localtime,hostname,shadow,locale.conf}
   arch-chroot "$mountpoint" systemctl enable systemd-firstboot.service
-  arch-chroot "$mountpoint" systemctl enable systemd-setup
+  arch-chroot "$mountpoint" systemctl enable system-setup.service
 }
 
 setup_systemd_in_chroot(){
