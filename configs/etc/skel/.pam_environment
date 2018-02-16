@@ -1,0 +1,8 @@
+GDK_BACKEND              DEFAULT=wayland
+QT_QPA_PLATFORM          DEFAULT=wayland-egl
+SDL_VIDEODRIVER          DEFAULT=wayland
+GTK_THEME                DEFAULT=Adwaita:dark
+QT_QPA_PLATFORMTHEME     DEFAULT=qt5ct 
+
+XDG_CONFIG_HOME DEFAULT=@{HOME}/.local/config
+XDG_DATA_HOME   DEFAULT=@{HOME}/.local/data
