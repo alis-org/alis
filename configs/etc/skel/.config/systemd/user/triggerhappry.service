@@ -1,0 +1,10 @@
+[Unit]
+Description=triggerhappy global hotkey daemon
+After=local-fs.target
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/thd --triggers /home/dryam/.config/triggerhappy/triggers.d  --deviceglob  /dev/input/hot_kbd
+
+[Install]
+WantedBy=default.target
