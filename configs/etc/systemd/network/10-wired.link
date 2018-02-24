@@ -1,5 +1,6 @@
 [Match]
 Type=!wlan
+OriginalName=!lo
 Virtualization=no
 
 [Link]

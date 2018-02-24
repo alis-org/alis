@@ -3,6 +3,8 @@ Name=wireless0
 
 [Network]
 Description="IPv4 wireless network with DHCP"
+IPv6AcceptRA=no
+LinkLocalAddressing=ipv4
 DHCP=ipv4
 
 [DHCP]
