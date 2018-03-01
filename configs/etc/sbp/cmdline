@@ -1,1 +1,0 @@
-root=/dev/mapper/arch init=/usr/lib/systemd/systemd rw splash quiet

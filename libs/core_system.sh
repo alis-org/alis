@@ -6,7 +6,7 @@ core_system(){
   local name="installing minimal required packages"
   title "Start $name: $@"
 
- pacstrap  -C configs/etc/alis/pacstrap.conf "$mountpoint" linux linux-headers linux-docs crda \
+ pacstrap  -C configs/etc/pacman.d/pacstrap.conf "$mountpoint" linux linux-headers linux-docs crda \
                                                            systemd systemd-sysvcompat libmicrohttpd systemd-swap quota-tools polkit \
                                                            btrfs-progs snapper dosfstools snap-pac \
                                                            iputils inetutils iproute2 util-linux psmisc procps-ng pciutils coreutils findutils sysfsutils usbutils util-linux binutils \
@@ -23,7 +23,7 @@ core_system(){
                                                            nano \
                                                            logrotate \
                                                            intel-ucode vulkan-intel libva-intel-driver broadcom-wl-dkms \
-                                                           wpa_supplicant wpa_actiond \
+                                                           wpa_supplicant wireless_tools \
                                                            efibootmgr efitools sbsigntools \
                                                            sudo wget git xdelta3
 }

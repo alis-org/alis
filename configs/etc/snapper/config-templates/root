@@ -11,8 +11,8 @@ QGROUP=""
 SPACE_LIMIT="0.1"
 
 # users and groups allowed to work with config
-ALLOW_USERS="root"
-ALLOW_GROUPS="wheel"
+ALLOW_USERS=""
+ALLOW_GROUPS=""
 
 # sync users and groups from ALLOW_USERS and ALLOW_GROUPS to .snapshots
 # directory

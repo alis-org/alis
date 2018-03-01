@@ -17,7 +17,7 @@ Environment=TERM=linux
 RemainAfterExit=yes
 ExecStart=/usr/bin/system-setup --first-start
 StandardInput=tty
-TTYPath=/dev/tty1
+TTYPath=/dev/tty
 TTYReset=yes
 TTYVHangup=yes
 
