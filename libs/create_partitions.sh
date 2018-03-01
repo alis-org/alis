@@ -3,6 +3,14 @@
 # DESCRIPTION
 # https://goo.gl/FoKRZk
 create_os_part(){
+
+  dd bs=512 count=4 if=/dev/urandom of="$luks_keyfile"
+   if [ $? -eq 0 ]; then
+    msg "Creating $luks_keyfile is good";
+  else
+    die "Creating $luks_keyfile is bad";
+  fi
+
   truncate -s 2M "$luks_header"
   if [ $? -eq 0 ]; then
     msg "Creating $luks_header is good";
@@ -10,14 +18,14 @@ create_os_part(){
     die "Creating $luks_header is bad";
   fi
 
-  cryptsetup -q -c "$cipher" luksFormat "$os_part"  --type=luks2 --disable-keyring -y --progress-frequency=1 -t=0 -T=2  --header="$luks_header"  --label="$os_label"
+  cryptsetup -q -c "$cipher" luksFormat "$os_part"  --type=luks2 --disable-keyring -y --progress-frequency=1 -t=0 -T=2  --header="$luks_header" --key-file="$luks_keyfile"  --label="$os_label"
   if [ $? -eq 0 ]; then
     msg "Formating $os_part to luks device is good";
   else
     die "Formating $os_part to luks device is bad";
   fi
 
-  cryptsetup -q luksOpen "$os_part" --header="$luks_header" "$luks_device"
+  cryptsetup -q luksOpen "$os_part" --header="$luks_header" --key-file="$luks_keyfile"  "$luks_device"
   if [ $? -eq 0 ]; then
     msg "Opening $os_part as $luks_device is good";
   else
@@ -92,7 +100,7 @@ create_os_part(){
   ##TODO: move to separate functions
   mount -t vfat -o "$esp_part_opts"                                  "$esp_part"        "$mountpoint/boot"
   mv "$luks_header" "$mountpoint/boot"
-
+  mv "$luks_keyfile" "$mountpoint"
 
   if [ $? -eq 0 ]; then
     msg "Mouting layout is good";

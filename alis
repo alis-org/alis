@@ -24,7 +24,7 @@ die(){
 import_libs(){
   . libs/pre_install.sh
   . libs/create_partitions.sh
-  . libs/min_pack.sh
+  . libs/core_system.sh
   . libs/copy_configs.sh
   . libs/setup_systemd_in_chroot.sh
   }
@@ -140,6 +140,7 @@ parse_arguments(){
 set_defaults(){
 
   readonly luks_header="header.img"
+  readonly luks_keyfile="crypto_keyfile.bin"
   readonly luks_device="arch"
    readonly mountpoint="/mnt"
     readonly luks_uuid="04c2b973-4aca-45e6-8434-f66ed6ea922d"

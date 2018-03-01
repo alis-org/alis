@@ -14,7 +14,7 @@ Before=getty@tty1.service
 [Service]
 Type=oneshot
 Environment=TERM=linux
-RemainAfterExit=no
+RemainAfterExit=yes
 ExecStart=/usr/bin/system-setup --first-start
 StandardInput=tty
 TTYPath=/dev/tty1

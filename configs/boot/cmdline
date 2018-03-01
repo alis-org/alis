@@ -1,0 +1,1 @@
+root=/dev/mapper/arch init=/usr/lib/systemd/systemd rw reboot=warm fastboot quiet
