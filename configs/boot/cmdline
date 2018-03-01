@@ -1,1 +1,1 @@
-root=/dev/mapper/arch init=/usr/lib/systemd/systemd rw reboot=warm intremap=no_x2apic_optout fastboot quiet loglevel=3 rd.udev.log_priority=3
+root=/dev/mapper/arch init=/usr/lib/systemd/systemd rw reboot=warm fastboot quiet loglevel=3 rd.udev.log_priority=3

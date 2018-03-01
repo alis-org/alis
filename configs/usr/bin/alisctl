@@ -11,27 +11,27 @@ parse_arguments(){
   for argument in "$@"
   do
   case $argument in
-    --update-boot)
+    update-boot)
     action=update_secure_boot
       shift
       ;;
-    --create-user)
+    create-user)
     action=create_user
       shift
       ;;
-    --generate-efi-keys)
+    generate-efi-keys)
     action=generate_efi_keys
       shift
       ;;
-    --get-email)
+    get-email)
     action=get_email
       shift
       ;;
-    --first-start)
+    first-start)
     action=first_start
       shift
       ;;
-    --get-fullname)
+    get-fullname)
     action=get_fullname
       shift
       ;;
@@ -45,26 +45,26 @@ parse_arguments(){
 create_user(){
     clear
     read -p "user login: " user
-    read -p "real name:  " name
-    read -p "e-mail address: " mail
+    read -p "full name:  " name
+    read -p "e-mail address: " email
     read -p "allow use sudo: " asudo
     clear
     echo login:"$user", name:"$name",  e-mail:"$mail", sudo:"$asudo"
-    read -p "is thi correct? " answer
+    read -p "is this correct? " answer
     case ${answer:0:1} in
         y|Y )
-             sh /usr/lib/pam_snapper/pam_snapper_useradd.sh  "${user}"  "${user}"  
-             cp /etc/skel/.zshrc /home/"${user}"  
-             cp -r /etc/skel/.config /home/"${user}"  
-             chown -R "${user}":"${user}" /home/"${user}"/.config  
-             chown -R "${user}":"${user}" /home/"${user}"/.zshrc  
+             sh /usr/lib/pam_snapper/pam_snapper_useradd.sh  "${user}"  "${user}"
+             cp /etc/skel/.zshrc /home/"${user}"
+             cp -r /etc/skel/.config /home/"${user}"
+             chown -R "${user}":"${user}" /home/"${user}"/.config
+             chown -R "${user}":"${user}" /home/"${user}"/.zshrc
              passwd ${user} -d -e
              case ${asudo:0:1} in
                 y|Y )
-                        usermod -G wheel -c "$name,,,,$mail"  --shell=/bin/zsh "${user}"  
+                        usermod -G wheel -c "$name $email"  --shell=/bin/zsh "${user}"
                 ;;
                 n|N )
-                        usermod  -c "$name,,,,$mail" --shell=/bin/zsh "${user}"  
+                        usermod  -c "$name $email" --shell=/bin/zsh "${user}"
                 ;;
              esac
              ;;
@@ -73,6 +73,7 @@ create_user(){
              ;;
     esac
     echo "$user successfully created"
+    sleep 3
 }
 
 generate_efi_keys(){
@@ -158,11 +159,11 @@ sign_efi
 
 first_start(){
 	clear
-        create_user  
+        create_user
         generate_efi_keys
-       # enroll_keys
+        enroll_keys
 	mkdir -p /boot/EFI/Linux
-	update_secure_boot       
+	update_secure_boot
 }
 
 main(){
@@ -171,4 +172,3 @@ main(){
 }
 
 main "$@"
-
