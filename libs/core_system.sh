@@ -28,5 +28,5 @@ core_system(){
                                                            sudo wget git xdelta3
 }
 
-export core_systemd
+export core_system
 
