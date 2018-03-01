@@ -151,31 +151,18 @@ getent passwd $UID| awk -F : '{print $5}' | awk -F, '{ print $1}'
 
 update_secure_boot(){
 create_efi_app
-create_efi_entety
 bootctl update
+create_efi_entety
 sign_efi
 }
 
 first_start(){
 	clear
-	tput clear
-	tput cup 33 66
-	echo "Choose new username: "
-	tput cup 33 87
-	read -p "" user
-	tput cup 34 66
         create_user  
-        generate_efi_keys  
-        enroll_keys  
-        create_efi_app  
-        create_efi_entety  
-	systemctl disable system-setup  
-	tput cup 34 66
-	echo "Now login to system"
-	tput cup 35 66
-	sleep 3
-	tput clear
-	clear
+        generate_efi_keys
+       # enroll_keys
+	mkdir -p /boot/EFI/Linux
+	update_secure_boot       
 }
 
 main(){
