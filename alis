@@ -49,13 +49,6 @@ show_status(){
   printf "%s\n" "New OS ready to install"
 }
 
-start_firstlogin(){
-  . libs/pam_snapper_useradd.sh  "${new_user}" "${new_user_group}"
-   usermod --comment="Owner"  --shell=/bin/zsh -G wheel,lp "${new_user}"
-   cp -r /etc/skel/.config /home/"${new_user}"
-   cp /etc/skel/.zshrc /home/"${new_user}"
-   logout
-}
 
 start_system_installation(){
   title "Get ready to rock!"

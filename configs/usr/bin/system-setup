@@ -5,7 +5,7 @@
 #set -euo pipefail
 
 
-owner=
+user=
 
 parse_arguments(){
   for argument in "$@"
@@ -15,8 +15,24 @@ parse_arguments(){
     action=update_secure_boot
       shift
       ;;
+    --create-user)
+    action=create_user
+      shift
+      ;;
+    --generate-efi-keys)
+    action=generate_efi_keys
+      shift
+      ;;
+    --get-email)
+    action=get_email
+      shift
+      ;;
     --first-start)
     action=first_start
+      shift
+      ;;
+    --get-fullname)
+    action=get_fullname
       shift
       ;;
      *)
@@ -26,16 +42,40 @@ parse_arguments(){
   done
 }
 
-create_owner(){
-    sh /usr/lib/pam_snapper/pam_snapper_useradd.sh  "${owner}"  "${owner}" 
-    usermod --comment="Owner" -G wheel,lp  --shell=/bin/zsh "${owner}"
-    cp /etc/skel/.zshrc /home/"${owner}"
-    cp -r /etc/skel/.config /home/"${owner}"
-    chown "${owner}":"${owner}" /home/${owner}/{.config,.zshrc}
-    passwd ${owner} -d -e
+create_user(){
+    clear
+    read -p "user login: " user
+    read -p "real name:  " name
+    read -p "e-mail address: " mail
+    read -p "allow use sudo: " asudo
+    clear
+    echo login:"$user", name:"$name",  e-mail:"$mail", sudo:"$asudo"
+    read -p "is thi correct? " answer
+    case ${answer:0:1} in
+        y|Y )
+             sh /usr/lib/pam_snapper/pam_snapper_useradd.sh  "${user}"  "${user}"  
+             cp /etc/skel/.zshrc /home/"${user}"  
+             cp -r /etc/skel/.config /home/"${user}"  
+             chown -R "${user}":"${user}" /home/"${user}"/.config  
+             chown -R "${user}":"${user}" /home/"${user}"/.zshrc  
+             passwd ${user} -d -e
+             case ${asudo:0:1} in
+                y|Y )
+                        usermod -G wheel -c "$name,,,,$mail"  --shell=/bin/zsh "${user}"  
+                ;;
+                n|N )
+                        usermod  -c "$name,,,,$mail" --shell=/bin/zsh "${user}"  
+                ;;
+             esac
+             ;;
+             n|N)
+             create_user
+             ;;
+    esac
+    echo "$user successfully created"
 }
 
-generate_keys(){
+generate_efi_keys(){
     rm -rf /etc/efikeys
     mkdir /etc/efikeys
     cd /etc/efikeys
@@ -83,7 +123,6 @@ objcopy \
         --add-section .linux="/boot/vmlinuz-linux" --change-section-vma .linux=0x40000 \
         --add-section .initrd="/boot/initrd-combined.img" --change-section-vma .initrd=0x3000000 \
          "/usr/lib/systemd/boot/efi/linuxx64.efi.stub" "/boot/EFI/Linux/arch.efi"
-         sbverify  --cert /etc/efikeys/db.crt /boot/EFI/Linux/arch.efi
  }
 
 sign_efi(){
@@ -102,6 +141,14 @@ create_efi_entety(){
   efibootmgr -n 0000
 }
 
+get_email(){
+getent passwd $UID| awk -F : '{print $5}' | awk -F, '{ print $5}'
+}
+
+get_fullname(){
+getent passwd $UID| awk -F : '{print $5}' | awk -F, '{ print $1}'
+}
+
 update_secure_boot(){
 create_efi_app
 create_efi_entety
@@ -115,14 +162,14 @@ first_start(){
 	tput cup 33 66
 	echo "Choose new username: "
 	tput cup 33 87
-	read -p "" owner
+	read -p "" user
 	tput cup 34 66
-        create_owner >/dev/null 2>/dev/null
-        generate_keys >/dev/null 2>/dev/null
-        enroll_keys >/dev/null 2>/dev/null
-        create_efi_app >/dev/null 2>/dev/null
-        create_efi_entety >/dev/null 2>/dev/null
-	systemctl disable system-setup >/dev/null 2>/dev/null
+        create_user  
+        generate_efi_keys  
+        enroll_keys  
+        create_efi_app  
+        create_efi_entety  
+	systemctl disable system-setup  
 	tput cup 34 66
 	echo "Now login to system"
 	tput cup 35 66
@@ -137,3 +184,4 @@ main(){
 }
 
 main "$@"
+

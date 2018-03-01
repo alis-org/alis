@@ -9,7 +9,7 @@
 
 [Unit]
 Description=First Boot Wizard
-Before=getty@tty1.service
+Before=systemd-firstboot@service
 
 [Service]
 Type=oneshot
