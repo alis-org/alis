@@ -54,7 +54,7 @@ start_system_installation(){
   title "Get ready to rock!"
   pre_install
   create_partitions
-  min_pack
+  core_system
   copy_configs
   setup_systemd_in_chroot
 #  setup_bootloader
