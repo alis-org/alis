@@ -10,7 +10,7 @@
 #
 
 CMD_BTRFS="/sbin/btrfs"
-CMD_SNAPPER="/usr/bin/snapper"
+CMD_SNAPPER="/usr/bin/snapper --no-dbus"
 CMD_EGREP="grep -E"
 CMD_PAM_CONFIG="/usr/sbin/pam-config"
 CMD_SED="sed"

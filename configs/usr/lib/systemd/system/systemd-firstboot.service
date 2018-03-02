@@ -18,10 +18,12 @@ ConditionFirstBoot=yes
 [Service]
 Type=oneshot
 RemainAfterExit=yes
+ExecStartPre=/usr/bin/alisctl --first-start
 ExecStart=/usr/bin/systemd-firstboot --prompt
 StandardOutput=tty
 StandardInput=tty
 StandardError=tty
+TimeoutSec=600
 
 [Install]
 WantedBy=sysinit.target
