@@ -11,27 +11,27 @@ parse_arguments(){
   for argument in "$@"
   do
   case $argument in
-    update-boot)
+  --update-boot)
     action=update_secure_boot
       shift
       ;;
-    create-user)
+  --create-user)
     action=create_user
       shift
       ;;
-    generate-efi-keys)
+  --generate-efi-keys)
     action=generate_efi_keys
       shift
       ;;
-    get-email)
+  --get-email)
     action=get_email
       shift
       ;;
-    first-start)
+  --first-start)
     action=first_start
       shift
       ;;
-    get-fullname)
+   --get-fullname)
     action=get_fullname
       shift
       ;;
