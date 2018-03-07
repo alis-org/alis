@@ -1,0 +1,37 @@
+[color]
+        ui = auto
+        branch = auto
+        diff = auto
+        status = auto
+[color "branch"]
+	current = yellow
+	local = yellow
+	remote = green
+[color "diff"]
+	meta = yellow
+	frag = magenta
+	old = red
+	new = green
+[color "status"]
+	added = yellow
+	changed = green
+	untracked = cyan
+[core]
+	editor = nvim
+	pager = less -R
+
+[diff]
+        tool = vimdiff
+[difftool "vimdiff"]
+        cmd = nvim -d $LOCAL $REMOTE
+[merge]
+        tool = vimdiff
+[mergetool "vimdiff"]
+        cmd = nvim -d $BASE $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+[alias]
+    co = checkout
+    ci = commit
+    st = status
+    br = branch
+    lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+    hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short

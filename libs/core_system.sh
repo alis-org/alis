@@ -25,7 +25,8 @@ core_system(){
                                                            intel-ucode vulkan-intel libva-intel-driver broadcom-wl-dkms \
                                                            wpa_supplicant wireless_tools \
                                                            efibootmgr efitools sbsigntools \
-                                                           sudo wget git xdelta3
+                                                           sudo wget git xdelta3 grc neovim \
+                                                           xdg-user-dirs archlinux-xdg-menu
 }
 
 export core_system

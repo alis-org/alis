@@ -32,22 +32,8 @@ setopt printexitvalue
 ## Allow comments even in interactive shells
 setopt interactivecomments
 
-autoload -Uz promptinit
-promptinit
-prompt walters
-
 ## Use a default width of 80 for manpages for more convenient reading
 export MANWIDTH=${MANWIDTH:-80}
-
-
-## Switching shell safely and efficiently? http://www.zsh.org/mla/workers/2001/msg02410.html
-bash() {
-    NO_SWITCH="yes" command bash "$@"
-}
-restart () {
-    exec $SHELL $SHELL_ARGS "$@"
-}
-
 
 ## Sourcing usefull scripts
 if [ -e /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
@@ -60,6 +46,11 @@ fi
 
 if [ -e /usr/share/doc/pkgfile/command-not-found.zsh ]; then
         source /usr/share/doc/pkgfile/command-not-found.zsh
+fi
+
+if [ -e /usr/share/git/completion/git-prompt.zsh ]; then
+        source /usr/share/git/completion/git-prompt.sh
+        zstyle ':completion:*:*:git:*' script /usr/share/git/completion/git-completion.zsh
 fi
 
 if [ -f /usr/bin/grc ]; then
@@ -79,43 +70,42 @@ zstyle ':completion:*' rehash true
 zstyle ':completion:*' completer _complete _correct _approximate
 zstyle ':completion:*' expand prefix suffix
 
-##Extract from  archive
-ex () {
- if [ -f $1 ] ; then
-   case $1 in
-     *.tar.bz2) tar xvjf $1   ;;
-     *.tar.gz)  tar xvzf $1   ;;
-     *.tar.xz)  tar xvfJ $1   ;;
-     *.bz2)     bunzip2 $1    ;;
-     *.rar)     unrar x $1    ;;
-     *.gz)      gunzip $1     ;;
-     *.tar)     tar xvf $1    ;;
-     *.tbz2)    tar xvjf $1   ;;
-     *.tgz)     tar xvzf $1   ;;
-     *.zip)     unzip $1      ;;
-     *.Z)       uncompress $1 ;;
-     *.7z)      7z x $1       ;;
-     *)         echo "'$1' Не может быть распакован при помощи >ex<" ;;
-   esac
- else
-   echo "'$1' не является допустимым файлом"
- fi
+# less settings
+export LESSOPEN="| /usr/bin/src-hilite-lesspipe.sh %s"
+export LESS=-R
+export LESS_TERMCAP_mb=$'\E[1;31m'     # begin bold
+export LESS_TERMCAP_md=$'\E[1;36m'     # begin blink
+export LESS_TERMCAP_me=$'\E[0m'        # reset bold/blink
+export LESS_TERMCAP_so=$'\E[01;44;33m' # begin reverse video
+export LESS_TERMCAP_se=$'\E[0m'        # reset reverse video
+export LESS_TERMCAP_us=$'\E[1;32m'     # begin underline
+export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
+
+man() {
+LESS_TERMCAP_md=$'\e[01;31m' \
+LESS_TERMCAP_me=$'\e[0m' \
+LESS_TERMCAP_se=$'\e[0m' \
+LESS_TERMCAP_so=$'\e[01;44;33m' \
+LESS_TERMCAP_ue=$'\e[0m' \
+LESS_TERMCAP_us=$'\e[01;32m' \
+command man "$@"
 }
 
-## Pack to archive
-pk () {
-if [ $1 ] ; then
-case $1 in
-tbz)       tar cjvf $2.tar.bz2 $2      ;;
-tgz)       tar czvf $2.tar.gz  $2       ;;
-tar)      tar cpvf $2.tar  $2       ;;
-bz2)    bzip $2 ;;
-gz)        gzip -c -9 -n $2 > $2.gz ;;
-zip)       zip -r $2.zip $2   ;;
-7z)        7z a $2.7z $2    ;;
-*)         echo "'$1' не может быть упакован с помощью pk()" ;;
-esac
-else
-echo "'$1' не является допустимым файлом"
-fi
-}
+## Git prompt
+setopt PROMPT_SUBST ; PS1='[%n@%m %c$(__git_ps1 " (%s)")]\$ '
+## + for staged, * if unstaged.
+GIT_PS1_SHOWDIRTYSTATE=true
+## GIT_PS1_SHOWSTASHSTATE
+GIT_PS1_SHOWSTASHSTATE=true
+##% if there are untracked files.
+GIT_PS1_SHOWUNTRACKEDFILES=true
+##<,>,<> behind, ahead, or diverged from upstream
+GIT_PS1_SHOWUPSTREAM=true
+
+## Custom alias
+alias vim="nvim"
+alias vimdiff="nvim -d"
+
+export MANPAGER="nvim -c 'set ft=man nomod nolist hlsearch incsearch' -"
+
+
