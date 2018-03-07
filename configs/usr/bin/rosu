@@ -1,3 +1,0 @@
-#!/bin/bash
-
-rofi -dmenu  -p "Password:" -lines 1 -password -input /dev/null

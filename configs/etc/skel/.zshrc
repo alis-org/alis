@@ -77,4 +77,4 @@ alias grep='grep --color=auto'
 alias less='/usr/share/nvim/runtime/macros/less.sh'
 alias  sudo="sudo -EHA"
 export SYSTEMD_LESS=FRXMK
-export SUDO_ASKPASS=/usr/bin/rosu
+export SUDO_ASKPASS=/usr/bin/systemd-ask-password
