@@ -26,7 +26,7 @@ core_system(){
                                                            wpa_supplicant wireless_tools \
                                                            efibootmgr efitools sbsigntools \
                                                            sudo wget git xdelta3 grc neovim \
-                                                           xdg-user-dirs archlinux-xdg-menu
+                                                           xdg-user-dirs archlinux-xdg-menu archey3
 }
 
 export core_system

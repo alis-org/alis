@@ -1,0 +1,10 @@
+#overview {
+  background-color: #2E3436 !important;
+    max-width: 100% !important;
+      max-height: 100% !important;
+        position: fixed !important;
+        }
+
+        #overview .overview-title {
+          color: white !important;
+          }

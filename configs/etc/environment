@@ -1,0 +1,13 @@
+#
+# This file is parsed by pam_env module
+#
+# Syntax: simple "KEY=VAL" pairs on separate lines
+#
+GDK_BACKEND=wayland
+QT_QPA_PLATFORM=wayland-egl
+CLUTTER_BACKEND=wayland
+SDL_VIDEODRIVER=wayland
+PAGER=less
+EDITOR=nvim
+SHELL=zsh
+
