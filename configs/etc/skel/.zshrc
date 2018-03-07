@@ -81,6 +81,8 @@ GIT_PS1_SHOWUNTRACKEDFILES=true
 ##<,>,<> behind, ahead, or diverged from upstream
 GIT_PS1_SHOWUPSTREAM=true
 
+export SYSTEMD_LESS=FRXMK 
+
 ## Custom alias
 alias vim="nvim"
 alias vimdiff="nvim -d"
