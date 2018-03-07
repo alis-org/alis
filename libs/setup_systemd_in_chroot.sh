@@ -82,6 +82,10 @@ enable_network_services(){
   ln -sf /run/systemd/resolve/resolv.conf /mnt/etc/resolv.conf
 }
 
+enable_power_services(){
+  arch-chroot "$mountpoint" systemctl enable powertop.service
+}
+
 generate_locales(){
   arch-chroot "$mountpoint" locale-gen
   if [ $? -eq 0 ]; then
@@ -126,6 +130,7 @@ setup_systemd_in_chroot(){
   generate_locales
   setup_rollback_layout
   enable_network_services
+  enable_power_services
   check_permissions
   generate_fstab
   update_pkgfile

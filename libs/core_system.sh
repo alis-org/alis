@@ -22,7 +22,7 @@ core_system(){
                                                            gcc-libs gettext glibc \
                                                            nano \
                                                            logrotate \
-                                                           intel-ucode vulkan-intel libva-intel-driver broadcom-wl-dkms \
+                                                           intel-ucode vulkan-intel libva-intel-driver broadcom-wl-dkms powertop \
                                                            wpa_supplicant wireless_tools \
                                                            efibootmgr efitools sbsigntools \
                                                            sudo wget git xdelta3 grc neovim \
