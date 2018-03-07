@@ -13,7 +13,7 @@ core_system(){
                                                            terminus-font ttf-dejavu ttf-hack xorg-fonts-alias \
                                                            pacman pkgfile \
                                                            man-db man-pages \
-                                                           less lesspipe source-highlight tmux gawk grep sed tar lzop which  tree \
+                                                           less tmux gawk grep sed tar lzop which  tree \
                                                            shadow \
                                                            bash bash-completion zsh zsh-completions zsh-syntax-highlighting grml-zsh-config \
                                                            bzip2 gzip lzop lz4 xz \
