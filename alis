@@ -51,14 +51,6 @@ parse_args(){
   done
 }
 
-import_libs(){
-  source libs/pre_install.sh
-  source libs/create_partitions.sh
-  source libs/core_system.sh
-  source libs/copy_configs.sh
-  source libs/setup_systemd_in_chroot.sh
-}
-
 check_deps(){
   if [ ! -d "$script_name"_libs ]; then
         mkdir "$script_name"_libs
@@ -67,8 +59,13 @@ check_deps(){
         do
           curl --retry 3 --retry-delay 2 -O "$dep"
         done
-        echo
+
+        for filename in "$script_path"/"$script_name"_libs/*.sh
+        do
+          source "$filename"
+        done
   fi
+
 }
 
 check_vars(){
@@ -96,7 +93,13 @@ init(){
    readonly script_name='alis'
    readonly script_desc='Arch Linux Install Script'
    readonly script_repo='https://github.com/alis-repo/alis'
-   readonly script_deps=('checkinstall.sh' 'storage.sh' 'packstrap.sh' 'configs.sh')
+   readonly script_deps=(
+                         'https://raw.githubusercontent.com/Dryamov/shellrock/master/checkinstall.sh'
+                         'https://raw.githubusercontent.com/Dryamov/shellrock/master/storage.sh'
+                         'https://raw.githubusercontent.com/Dryamov/shellrock/master/packstrap.sh'
+                         'https://raw.githubusercontent.com/Dryamov/shellrock/master/configs.sh'
+                         'https://raw.githubusercontent.com/Dryamov/shellrock/master/archroot.sh'
+                         )
    readonly script_filename="${0##*/}"
    readonly script_path="$(cd "$(dirname "$0")" && pwd)"
 }
@@ -107,7 +110,7 @@ main(){
   set -o pipefail               #let script exit if any command in a pipeline fails
   set -o vi                     #let script use vi-style cpmmand line editing interface
   set -o posix                  #let script use the behavior of bash for POSIX
-# set -o xtrace                 #let script show value of PS4 after expanding each command
+  set -o xtrace                 #let script show value of PS4 after expanding each command
 
   IFS=$'\n\t'                   #set word splitter to new line and tab
 
