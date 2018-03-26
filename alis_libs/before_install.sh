@@ -31,9 +31,9 @@ create_ranked_mirrorslist(){
   fi
   wget --quiet "https://www.archlinux.org/mirrorlist/?country=$country_code&protocol=https&ip_version=4" -O '/etc/pacman.d/mirrorlist.tmp'
   sed -i 's/^#Server/Server/' /etc/pacman.d/mirrorlist.tmp
-  rankmirrors -n 6 /etc/pacman.d/mirrorlist.tmp > /etc/pacman.d/mirrorlist
 
-  if [ $? -eq 0 ]; then
+
+  if rankmirrors -n 6 /etc/pacman.d/mirrorlist.tmp > /etc/pacman.d/mirrorlist; then
     msg "Mirrors list is good";
   else
     die "Mirrors list is bad";
@@ -41,8 +41,7 @@ create_ranked_mirrorslist(){
 }
 
 sync_sys_time(){
-  timedatectl set-ntp true
-  if [ $? -eq 0 ]; then
+  if timedatectl set-ntp true; then
     msg "Time is good";
   else
     die "Time is bad";
@@ -58,17 +57,14 @@ check_efi_folder(){
 }
 
 check_ping_result(){
-  ping -c 3 www.archlinux.org > log;
-  if [ $? -eq 0 ]; then
+  if ping -c 3 www.archlinux.org; then
     msg "Network is good";
   else
     die "Network is bad";
   fi
 }
 
-pre_install(){
-  local name="pre-install script"
-  title "Start $name: $@"
+before_install(){
   check_ping_result
   check_efi_folder
   sync_sys_time
@@ -76,4 +72,4 @@ pre_install(){
   check_previous_install
 }
 
-export pre_install
+export before_install
