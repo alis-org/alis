@@ -1,0 +1,170 @@
+
+In alis line 9:
+  pre_install
+  ^-- SC2119: Use pre_install "$@" if function's $1 should mean script's $1.
+
+
+In alis line 10:
+  create_partitions
+  ^-- SC2119: Use create_partitions "$@" if function's $1 should mean script's $1.
+
+
+In alis line 11:
+  core_system
+  ^-- SC2119: Use core_system "$@" if function's $1 should mean script's $1.
+
+
+In alis line 12:
+  copy_configs
+  ^-- SC2119: Use copy_configs "$@" if function's $1 should mean script's $1.
+
+
+In alis line 13:
+  setup_systemd_in_chroot
+  ^-- SC2119: Use setup_systemd_in_chroot "$@" if function's $1 should mean script's $1.
+
+
+In libs/copy_configs.sh line 7:
+  cp --backup=simple --suffix=".bakup" --parent  -P -R  -v  *  -t /mnt
+                                                            ^-- SC2035: Use ./*glob* or -- *glob* so names with dashes won't become options.
+
+
+In libs/copy_configs.sh line 9:
+  if [ $? -eq 0 ]; then
+       ^-- SC2181: Check exit code directly with e.g. 'if mycmd;', not indirectly with $?.
+
+
+In libs/copy_configs.sh line 17:
+copy_configs(){
+^-- SC2120: copy_configs references arguments, but none are ever passed.
+
+
+In libs/copy_configs.sh line 19:
+  title "Start $name: $@"
+                      ^-- SC2145: Argument mixes string and array. Use * or separate argument.
+
+
+In libs/core_system.sh line 5:
+core_system(){
+^-- SC2120: core_system references arguments, but none are ever passed.
+
+
+In libs/core_system.sh line 7:
+  title "Start $name: $@"
+                      ^-- SC2145: Argument mixes string and array. Use * or separate argument.
+
+
+In libs/create_partitions.sh line 8:
+   if [ $? -eq 0 ]; then
+        ^-- SC2181: Check exit code directly with e.g. 'if mycmd;', not indirectly with $?.
+
+
+In libs/create_partitions.sh line 15:
+  if [ $? -eq 0 ]; then
+       ^-- SC2181: Check exit code directly with e.g. 'if mycmd;', not indirectly with $?.
+
+
+In libs/create_partitions.sh line 22:
+  if [ $? -eq 0 ]; then
+       ^-- SC2181: Check exit code directly with e.g. 'if mycmd;', not indirectly with $?.
+
+
+In libs/create_partitions.sh line 29:
+  if [ $? -eq 0 ]; then
+       ^-- SC2181: Check exit code directly with e.g. 'if mycmd;', not indirectly with $?.
+
+
+In libs/create_partitions.sh line 37:
+  if [ $? -eq 0 ]; then
+       ^-- SC2181: Check exit code directly with e.g. 'if mycmd;', not indirectly with $?.
+
+
+In libs/create_partitions.sh line 70:
+  if [ $? -eq 0 ]; then
+       ^-- SC2181: Check exit code directly with e.g. 'if mycmd;', not indirectly with $?.
+
+
+In libs/create_partitions.sh line 105:
+  if [ $? -eq 0 ]; then
+       ^-- SC2181: Check exit code directly with e.g. 'if mycmd;', not indirectly with $?.
+
+
+In libs/create_partitions.sh line 114:
+  if [ $? -eq 0 ]; then
+       ^-- SC2181: Check exit code directly with e.g. 'if mycmd;', not indirectly with $?.
+
+
+In libs/create_partitions.sh line 123:
+  if [ $? -eq 0 ]; then
+       ^-- SC2181: Check exit code directly with e.g. 'if mycmd;', not indirectly with $?.
+
+
+In libs/create_partitions.sh line 132:
+  if [ $? -eq 0 ]; then
+       ^-- SC2181: Check exit code directly with e.g. 'if mycmd;', not indirectly with $?.
+
+
+In libs/create_partitions.sh line 139:
+create_partitions(){
+^-- SC2120: create_partitions references arguments, but none are ever passed.
+
+
+In libs/create_partitions.sh line 141:
+  title "Start $name: $@"
+                      ^-- SC2145: Argument mixes string and array. Use * or separate argument.
+
+
+In libs/pre_install.sh line 36:
+  if [ $? -eq 0 ]; then
+       ^-- SC2181: Check exit code directly with e.g. 'if mycmd;', not indirectly with $?.
+
+
+In libs/pre_install.sh line 45:
+  if [ $? -eq 0 ]; then
+       ^-- SC2181: Check exit code directly with e.g. 'if mycmd;', not indirectly with $?.
+
+
+In libs/pre_install.sh line 62:
+  if [ $? -eq 0 ]; then
+       ^-- SC2181: Check exit code directly with e.g. 'if mycmd;', not indirectly with $?.
+
+
+In libs/pre_install.sh line 69:
+pre_install(){
+^-- SC2120: pre_install references arguments, but none are ever passed.
+
+
+In libs/pre_install.sh line 71:
+  title "Start $name: $@"
+                      ^-- SC2145: Argument mixes string and array. Use * or separate argument.
+
+
+In libs/setup_systemd_in_chroot.sh line 58:
+  if [ $? -eq 0 ]; then
+       ^-- SC2181: Check exit code directly with e.g. 'if mycmd;', not indirectly with $?.
+
+
+In libs/setup_systemd_in_chroot.sh line 70:
+  if [ $? -eq 0 ]; then
+       ^-- SC2181: Check exit code directly with e.g. 'if mycmd;', not indirectly with $?.
+
+
+In libs/setup_systemd_in_chroot.sh line 91:
+  if [ $? -eq 0 ]; then
+       ^-- SC2181: Check exit code directly with e.g. 'if mycmd;', not indirectly with $?.
+
+
+In libs/setup_systemd_in_chroot.sh line 100:
+  if [ $? -eq 0 ]; then
+       ^-- SC2181: Check exit code directly with e.g. 'if mycmd;', not indirectly with $?.
+
+
+In libs/setup_systemd_in_chroot.sh line 127:
+setup_systemd_in_chroot(){
+^-- SC2120: setup_systemd_in_chroot references arguments, but none are ever passed.
+
+
+In libs/setup_systemd_in_chroot.sh line 129:
+  title "Start $name: $@"
+                      ^-- SC2145: Argument mixes string and array. Use * or separate argument.
+

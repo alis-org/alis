@@ -2,56 +2,10 @@
 #
 # ALIS — Arch Linux Install Script
 #
-set -euo pipefail
-IFS=$'\n\t'
-
-title(){
-  title_decor=" >"
-  printf "%s\n" "$title_decor $@" >&2
-}
-
-msg(){
-  msg_decor="   +"
-  printf "%s\n" "$msg_decor $@" >&2
-}
-
-die(){
-  die_decor="   -"
-  printf "%s\n" "$die_decor $@" >&2
-  exit 1
-}
-
-import_libs(){
-  . libs/pre_install.sh
-  . libs/create_partitions.sh
-  . libs/core_system.sh
-  . libs/copy_configs.sh
-  . libs/setup_systemd_in_chroot.sh
-  }
-
-show_settings(){
- printf "%s\n" "Here current settings"
-}
-
-import_config(){
-. "$config"
-}
-
-start_configuration(){
-  printf "%s\n" "Lets tune this shit!"
-}
-
-show_usage(){
-  printf "%s\n" "Here will be a help pages"
-}
-
-show_status(){
-  printf "%s\n" "New OS ready to install"
-}
-
 
 start_system_installation(){
-  title "Get ready to rock!"
+  msg "Get ready to rock!"
+  sleep 500
   pre_install
   create_partitions
   core_system
@@ -60,7 +14,20 @@ start_system_installation(){
 #  setup_bootloader
 }
 
-parse_arguments(){
+show_usage(){
+  printf "%s\\n" "Here will be a help pages"
+}
+
+msg(){
+  printf "%s\\n" "$@" >&2
+}
+
+die(){
+  printf "%s\\n" "$@" >&2
+  exit 1
+}
+
+parse_args(){
   for argument in "$@"
   do
   case $argument in
@@ -68,70 +35,43 @@ parse_arguments(){
     action=start_system_installation
       shift
       ;;
-    first-login)
-    action=start_firstlogin
-      shift
-      ;;
-    status)
-    action=show_status
-      shift
-      ;;
-    setup|config|configure)
-    action=start_configuration
-      shift
-      ;;
-    -h|help)
+    -h|--help)
     action=show_usage
       shift
       ;;
-    --esp_label=*)
-      esp_label="${argument#*=}"
-      shift
-      ;;
-    --esp_part=*)
-      esp_part="${argument#*=}"
-      shift
-      ;;
-    --esp_part_opts=*)
-      esp_part_opts="${argument#*=}"
-      shift
-      ;;
-    --os_label=*)
-      os_label="${argument#*=}"
-      shift
-      ;;
-    --os_part=*)
-      os_part="${argument#*=}"
-      shift
-      ;;
-    --os_part_opts=*)
-      os_part_opts="${argument#*=}"
-      shift
-      ;;
-    --cipher=*)
-      cipher="${argument#*=}"
-      shift
-      ;;
     -v |--verbose)
-      set -x
-      verbose_mode="true"
-      printf "%s\n" "Verbose mode enabled"
-      shift
-      ;;
-     --config=*)
-      config="${argument#*=}"
-      import_config
+      set -o verbose
+      printf "%s\\n" "Verbose mode enabled"
       shift
       ;;
     *)
-      printf "%s\n"  "Error"
+      msg  "Unknown argument $argument"
       ;;
   esac
   done
 }
 
-set_defaults(){
+import_libs(){
+  source libs/pre_install.sh
+  source libs/create_partitions.sh
+  source libs/core_system.sh
+  source libs/copy_configs.sh
+  source libs/setup_systemd_in_chroot.sh
+}
 
+check_deps(){
+  if [ ! -d "$script_name"_libs ]; then
+        mkdir "$script_name"_libs
+        cd "$script_name"_libs
+        for dep in ${script_deps[*]}
+        do
+          curl --retry 3 --retry-delay 2 -O "$dep"
+        done
+        echo
+  fi
+}
+
+check_vars(){
   readonly luks_header="header.img"
   readonly luks_keyfile="crypto_keyfile.bin"
   readonly luks_device="arch"
@@ -148,22 +88,35 @@ set_defaults(){
   os_part_opts=${os_part_opts:-defaults,noatime,compress=lzo,space_cache,commit=120}
         cipher=${cipher:-aes-xts-plain -s 256}
 
-
         action=${action:-show_usage}
-  verbose_mode=${verbose_mode:-false}
-        config=${congig:-configs/etc/alis/alisrc}
   country_code=${country_code:-RU}
-      new_user=${new_user:-dryam}
-new_user_group=${new_user_group:-users}
+}
+
+init(){
+   readonly script_name='alis'
+   readonly script_desc='Arch Linux Install Script'
+   readonly script_repo='https://github.com/alis-repo/alis'
+   readonly script_deps=('checkinstall.sh' 'storage.sh' 'packstrap.sh' 'configs.sh')
+   readonly script_filename="${0##*/}"
+   readonly script_path="$(cd "$(dirname "$0")" && pwd)"
 }
 
 main(){
-  clear
-  set_defaults
-  import_config
-  import_libs
-  parse_arguments "$@"
-  "$action"
+  set -o errexit                #let script exit if a command fails
+  set -o nounset                #let script exit if an unsed variable is used
+  set -o pipefail               #let script exit if any command in a pipeline fails
+  set -o vi                     #let script use vi-style cpmmand line editing interface
+  set -o posix                  #let script use the behavior of bash for POSIX
+# set -o xtrace                 #let script show value of PS4 after expanding each command
+
+  IFS=$'\n\t'                   #set word splitter to new line and tab
+
+  init                          #get path, description and dependencys for this script.
+  parse_args "$@"               #parse arguments passed to script via command line
+  check_vars                    #check for unset or null vars and apply default values.
+  check_deps                    #check and resolv deps for this csript
+  "$action"                     #start default or passed by user type of action
 }
 
-main "$@"
+main "$@"                       #enter point
+
