@@ -5,11 +5,10 @@
 
 start_system_installation(){
   before_install
-  create_partitions
-  core_system
-  copy_configs
-  setup_systemd_in_chroot
-#  setup_bootloader
+  setup_disk
+  pacstrap_chroot
+  setup_chroot
+  after_install
 }
 
 show_usage(){
@@ -61,7 +60,7 @@ check_deps(){
 
   for filename in "$script_path"/"$script_name"_files/*.sh
         do
-          # shellcheck source=./alis_files/storage.sh
+          # shellcheck source=./alis_files/before_install.sh
           source "$filename"
         done
 
