@@ -54,7 +54,7 @@ check_deps(){
         cd "$script_name"_files
         for dep in ${script_deps[*]}
         do
-          curl --retry 3 --retry-delay 2 -O "$dep"
+          curl --retry 3 --retry-delay 2 -LO "$dep"
         done
   fi
 
