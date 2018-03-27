@@ -58,6 +58,11 @@ check_deps(){
         done
   fi
 
+  for archive in "$script_path"/"$script_name"_files/*.gz
+        do
+          tar -xvzf "$archive"
+        done
+
   for filename in "$script_path"/"$script_name"_files/*.sh
         do
           # shellcheck source=./alis_files/before_install.sh
@@ -95,6 +100,7 @@ init(){
                          'https://raw.githubusercontent.com/alis-repo/shellrock/develop/pacstrap_chroot.sh'
                          'https://raw.githubusercontent.com/alis-repo/shellrock/develop/setup_chroot.sh'
                          'https://raw.githubusercontent.com/alis-repo/shellrock/develop/after_install.sh'
+                         'https://github.com/alis-repo/alis/raw/develop/configs.tar.gz'
                          )
    readonly script_filename="${0##*/}"
    readonly script_path="$(cd "$(dirname "$0")" && pwd)"
