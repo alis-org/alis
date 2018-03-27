@@ -2,7 +2,19 @@
 #
 # DESCRIPTION
 #
-setup_rollback_layout(){
+
+update_configs(){
+  # shellcheck disable=SC2154
+  cd "$script_path"/"$script_name"_files/configs || return;
+  cp --backup=simple --suffix=".bakup" --parent -arv ./* -t /mnt
+}
+
+  generate_locales(){
+  # shellcheck disable=SC2154
+  arch-chroot "$mountpoint" locale-gen
+}
+
+setup_rollback(){
   arch-chroot "$mountpoint"  snapper -v --no-dbus -c root      create-config -t root /
   arch-chroot "$mountpoint"  snapper -v --no-dbus -c home      create-config -t default /home
   arch-chroot "$mountpoint"  snapper -v --no-dbus -c srv       create-config -t default /srv
@@ -43,6 +55,7 @@ setup_rollback_layout(){
   arch-chroot "$mountpoint"  chmod 750 /var/log/.snapshots
   arch-chroot "$mountpoint"  chmod 750 /var/cache/.snapshots
 
+  # shellcheck disable=SC2154
   arch-chroot "$mountpoint"  mount -t btrfs -o subvol=/snapshots/snapper_root,"$os_part_opts"        "/dev/mapper/$luks_device"   /.snapshots
   arch-chroot "$mountpoint"  mount -t btrfs -o subvol=/snapshots/snapper_home,"$os_part_opts"        "/dev/mapper/$luks_device"   /home/.snapshots
   arch-chroot "$mountpoint"  mount -t btrfs -o subvol=/snapshots/snapper_srv,"$os_part_opts"         "/dev/mapper/$luks_device"   /srv/.snapshots
@@ -54,90 +67,70 @@ setup_rollback_layout(){
   arch-chroot "$mountpoint"  mount -t btrfs -o subvol=/snapshots/var/snapper_cache,"$os_part_opts"   "/dev/mapper/$luks_device"   /var/cache/.snapshots
 
   arch-chroot "$mountpoint"  btrfs subvolume set-default 257 /
+}
 
-  if [ $? -eq 0 ]; then
-    msg "Rollback layout is good";
-  else
-    die "Rollback is bad";
-  fi
+setup_kernels(){
+  # shellcheck disable=SC2154
+  mv "$luks_header"  "$mountpoint/boot"
+  # shellcheck disable=SC2154
+  mv "$luks_keyfile" "$mountpoint"
+  arch-chroot "$mountpoint" mkinitcpio -p linux
+}
+
+setup_bootloader(){
+  arch-chroot "$mountpoint" bootctl install
+}
+
+setup_services(){
+  arch-chroot "$mountpoint" systemctl enable systemd-networkd.service
+  arch-chroot "$mountpoint" systemctl enable systemd-resolved.service
+  arch-chroot "$mountpoint" systemctl enable wpa_supplicant@wireless0.service
+  arch-chroot "$mountpoint" systemctl enable wpa_supplicant-wired@wired0.service
+  ln -sf /run/systemd/resolve/resolv.conf /mnt/etc/resolv.conf
+
+  arch-chroot "$mountpoint" systemctl enable powertop.service
+
+  arch-chroot "$mountpoint" rm --verbose  -rf /etc/{machine-id,localtime,hostname,shadow,locale.conf}
+  arch-chroot "$mountpoint" systemctl enable systemd-firstboot.service
 }
 
 setup_pacman(){
   arch-chroot "$mountpoint" pacman-key --init
   arch-chroot "$mountpoint" pacman-key --populate archlinux
   arch-chroot "$mountpoint" pacman-optimize
-
-  if [ $? -eq 0 ]; then
-    msg "Pacman is good";
-  else
-    die "Pacman is bad";
-  fi
 }
 
-enable_network_services(){
-  arch-chroot "$mountpoint" systemctl enable systemd-networkd.service
-  arch-chroot "$mountpoint" systemctl enable systemd-resolved.service
-  arch-chroot "$mountpoint" systemctl enable wpa_supplicant@wireless0.service
-  arch-chroot "$mountpoint" systemctl enable wpa_supplicant-wired@wired0.service
-  ln -sf /run/systemd/resolve/resolv.conf /mnt/etc/resolv.conf
-}
-
-enable_power_services(){
-  arch-chroot "$mountpoint" systemctl enable powertop.service
-}
-
-generate_locales(){
-  arch-chroot "$mountpoint" locale-gen
-  if [ $? -eq 0 ]; then
-    msg "Locales is good";
-  else
-    die "Locales is bad";
-  fi
-}
-
-generate_fstab(){
-  genfstab -U -p "$mountpoint" >> "$mountpoint/etc/fstab"
-  if [ $? -eq 0 ]; then
-    msg "Fstab is good";
-  else
-    die "Fstab is bad";
-  fi
-}
-
-check_permissions(){
-arch-chroot "$mountpoint" chown -c root:root /etc/sudoers.d/10_custom
-arch-chroot "$mountpoint" chmod -c 0440 /etc/sudoers.d/10_custom
-}
-
-update_pkgfile(){
-arch-chroot "$mountpoint" pkgfile --update
-}
-
-chsh_root(){
+setup_users(){
   arch-chroot "$mountpoint" chsh --shell=/bin/zsh root
   arch-chroot "$mountpoint" cp /etc/skel/.zshrc ~/
 }
 
-enable_firstboot(){
-  arch-chroot "$mountpoint" rm --verbose  -rf /etc/{machine-id,localtime,hostname,shadow,locale.conf}
-  arch-chroot "$mountpoint" systemctl enable systemd-firstboot.service
-#  arch-chroot "$mountpoint" systemctl enable system-setup.service
+generate_fstab(){
+  genfstab -U -p "$mountpoint" >> "$mountpoint/etc/fstab"
 }
 
-setup_systemd_in_chroot(){
-  local name="generating locales, rollback layout, enabling needed services"
-  title "Start $name: $@"
+update_bases(){
+  arch-chroot "$mountpoint" pkgfile --update
+}
+
+check_permissions(){
+  arch-chroot "$mountpoint" chown -c root:root /etc/sudoers.d/10_custom
+  arch-chroot "$mountpoint" chmod -c 0440 /etc/sudoers.d/10_custom
+  arch-chroot "$mountpoint" chmod 1777 /var/tmp
+}
+
+setup_chroot(){
+  update_configs
   generate_locales
-  setup_rollback_layout
-  enable_network_services
-  enable_power_services
-  check_permissions
+  setup_rollback
+  setup_kernels
+  setup_bootloader
+  setup_services
+  setup_pacman
+  setup_users
   generate_fstab
-  update_pkgfile
-  chsh_root
-  arch-chroot "$mountpoint" mkinitcpio -p linux
-  arch-chroot "$mountpoint" bootctl install
-  enable_firstboot
+  update_bases
+  check_permissions
 }
 
-export setup_systemd_in_chroot
+export setup_chroot

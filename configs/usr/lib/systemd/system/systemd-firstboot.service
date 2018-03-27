@@ -18,7 +18,6 @@ ConditionFirstBoot=yes
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStartPre=/usr/bin/alisctl --first-start
 ExecStart=/usr/bin/systemd-firstboot --prompt
 StandardOutput=tty
 StandardInput=tty

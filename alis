@@ -50,20 +50,20 @@ parse_args(){
 }
 
 check_deps(){
-  if [ ! -d "$script_name"_libs ]; then
-        mkdir "$script_name"_libs
-        cd "$script_name"_libs
+  if [ ! -d "$script_name"_files ]; then
+        mkdir "$script_name"_files
+        cd "$script_name"_files
         for dep in ${script_deps[*]}
         do
           curl --retry 3 --retry-delay 2 -O "$dep"
         done
+  fi
 
-        for filename in "$script_path"/"$script_name"_libs/*.sh
+  for filename in "$script_path"/"$script_name"_files/*.sh
         do
-          # shellcheck source=./alis_libs/checkinstall.sh
+          # shellcheck source=./alis_files/storage.sh
           source "$filename"
         done
-  fi
 
 }
 
@@ -72,8 +72,6 @@ check_vars(){
   readonly luks_keyfile="crypto_keyfile.bin"
   readonly luks_device="arch"
    readonly mountpoint="/mnt"
-    readonly luks_uuid="04c2b973-4aca-45e6-8434-f66ed6ea922d"
-      readonly os_uuid="1232b973-4aca-45e6-8434-f66ed6ea9321"
 
       esp_label=${esp_label:-ESP}
        esp_part=${esp_part:-/dev/sda1}
@@ -93,11 +91,11 @@ init(){
    readonly script_desc='Arch Linux Install Script'
    readonly script_repo='https://github.com/alis-repo/alis'
    readonly script_deps=(
-                         'https://raw.githubusercontent.com/Dryamov/shellrock/master/before_install.sh'
-                         'https://raw.githubusercontent.com/Dryamov/shellrock/master/storage.sh'
-                         'https://raw.githubusercontent.com/Dryamov/shellrock/master/packstrap.sh'
-                         'https://raw.githubusercontent.com/Dryamov/shellrock/master/configs.sh'
-                         'https://raw.githubusercontent.com/Dryamov/shellrock/master/archroot.sh'
+                         'https://raw.githubusercontent.com/alis-repo/shellrock/develop/before_install.sh'
+                         'https://raw.githubusercontent.com/alis-repo/shellrock/develop/setup_disk.sh'
+                         'https://raw.githubusercontent.com/alis-repo/shellrock/develop/pacstrap_chroot.sh'
+                         'https://raw.githubusercontent.com/alis-repo/shellrock/develop/setup_chroot.sh'
+                         'https://raw.githubusercontent.com/alis-repo/shellrock/develop/after_install.sh'
                          )
    readonly script_filename="${0##*/}"
    readonly script_path="$(cd "$(dirname "$0")" && pwd)"
@@ -121,4 +119,3 @@ main(){
 }
 
 main "$@"                       #enter point
-

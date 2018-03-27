@@ -2,44 +2,25 @@
 #
 # DESCRIPTION
 # https://goo.gl/FoKRZk
+
 create_os_part(){
-
+  # shellcheck disable=SC2154
   dd bs=512 count=4 if=/dev/urandom of="$luks_keyfile"
-   if [ $? -eq 0 ]; then
-    msg "Creating $luks_keyfile is good";
-  else
-    die "Creating $luks_keyfile is bad";
-  fi
 
+  # shellcheck disable=SC2154
   truncate -s 2M "$luks_header"
-  if [ $? -eq 0 ]; then
-    msg "Creating $luks_header is good";
-  else
-    die "Creating $luks_header is bad";
-  fi
 
-  cryptsetup -q -c "$cipher" luksFormat "$os_part"  --type=luks2 --disable-keyring -y --progress-frequency=1 -t=0 -T=2  --header="$luks_header" --key-file="$luks_keyfile"  --label="$os_label"
-  if [ $? -eq 0 ]; then
-    msg "Formating $os_part to luks device is good";
-  else
-    die "Formating $os_part to luks device is bad";
-  fi
+  # shellcheck disable=SC2154
+  cryptsetup  -c "$cipher" luksFormat "$os_part"  --type=luks2 --disable-keyring -y --progress-frequency=1 -t=0 -T=2  --header="$luks_header" --key-file="$luks_keyfile"  --label="$os_label"
 
-  cryptsetup -q luksOpen "$os_part" --header="$luks_header" --key-file="$luks_keyfile"  "$luks_device"
-  if [ $? -eq 0 ]; then
-    msg "Opening $os_part as $luks_device is good";
-  else
-    die "Opening $os_part as $luks_device is bad";
-  fi
+  # shellcheck disable=SC2154
+  cryptsetup  luksOpen "$os_part" --header="$luks_header" --key-file="$luks_keyfile"  "$luks_device"
 
-  mkfs.btrfs -f -q --uuid "$os_uuid"  --label "$os_label" "/dev/mapper/$luks_device"
+  # shellcheck disable=SC2154
+  mkfs.btrfs -f --label "$os_label" "/dev/mapper/$luks_device"
+
   sleep 5
-  if [ $? -eq 0 ]; then
-    msg "Creating btrfs on /dev/mapper/$luks_device with UUID=$os_uuid and LABEL=$os_label is good";
-  else
-    die "Creating btrfs on /dev/mapper/$luks_device with UUID=$os_uuid and LABEL=$os_label is bad";
-  fi
-
+  # shellcheck disable=SC2154
   mount -o "$os_part_opts"  "/dev/mapper/$luks_device" "$mountpoint"
              mkdir -v -p "$mountpoint/archlinux"
              mkdir -v -p "$mountpoint/archlinux/var"
@@ -67,12 +48,6 @@ create_os_part(){
   btrfs subvolume create "$mountpoint/snapshots/var/snapper_log"
   btrfs subvolume create "$mountpoint/snapshots/var/snapper_cache"
 
-  if [ $? -eq 0 ]; then
-    msg "Creating btrfs layout is good";
-  else
-    die "Creating btrfs layout is bad";
-  fi
-
   sleep 5
   umount -R "$mountpoint"
   mount -t btrfs -o subvol=/archlinux/root,"$os_part_opts" "/dev/mapper/$luks_device"  "$mountpoint"
@@ -95,54 +70,30 @@ create_os_part(){
   mount -t btrfs -o subvol=/archlinux/var/opt,"$os_part_opts"        "/dev/mapper/$luks_device"     "$mountpoint/var/opt"
   mount -t btrfs -o subvol=/archlinux/var/log,"$os_part_opts"        "/dev/mapper/$luks_device"     "$mountpoint/var/log"
   mount -t btrfs -o subvol=/archlinux/var/cache,"$os_part_opts"      "/dev/mapper/$luks_device"     "$mountpoint/var/cache"
-  chmod 1777 "$mountpoint/var/tmp"
 
-  ##TODO: move to separate functions
+  # shellcheck disable=SC2154
   mount -t vfat -o "$esp_part_opts"                                  "$esp_part"        "$mountpoint/boot"
-  mv "$luks_header" "$mountpoint/boot"
-  mv "$luks_keyfile" "$mountpoint"
-
-  if [ $? -eq 0 ]; then
-    msg "Mouting layout is good";
-  else
-    die "Mounting layout layout is bad";
-  fi
 }
 
 create_esp_part(){
-  mkfs.vfat -c -n "$esp_label" -F32 "$esp_part" > log
-  if [ $? -eq 0 ]; then
-    msg "Formating $esp_part to fat32 partition is good";
-  else
-    die "Formating $esp_part to fat32 partition is bad";
-  fi
+  # shellcheck disable=SC2154
+  mkfs.vfat -c -n "$esp_label" -F32 "$esp_part"
 }
 
 append_parts_table(){
-  sfdisk -q /dev/sda < libs/entire-ESP-OS.dump > log
-  if [ $? -eq 0 ]; then
-    msg "New partition table on /dev/sda is good";
-  else
-    die "New partition table on /dev/sda is bad";
-  fi
+  # shellcheck disable=SC2154
+  sfdisk "${os_part::-1}" < "$script_path"/"$script_name"_libs/entire-ESP-OS.dump
 }
 
 wipe_fs(){
-  wipefs --quiet --all /dev/sda > log
-  if [ $? -eq 0 ]; then
-    msg "Wipe partition table on /dev/sda is good";
-  else
-    die "Wipe partition table on /dev/sda is bad";
-  fi
+  wipefs --all "${os_part::-1}"
 }
 
-create_partitions(){
-  local name="create partitions script"
-  title "Start $name: $@"
+setup_disk(){
   wipe_fs
   append_parts_table
   create_esp_part
   create_os_part
 }
 
-export create_partitions
+export setup_disk
