@@ -1,1 +1,0 @@
-arch  /dev/sda2 /crypto_keyfile.bin header=/boot/header.img

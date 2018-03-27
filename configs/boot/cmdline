@@ -1,1 +1,0 @@
-root=/dev/mapper/arch init=/usr/lib/systemd/systemd rw reboot=warm  quiet loglevel=3 rd.udev.log_priority=3
